@@ -4,7 +4,7 @@ const EVENT_ID = "31537";
 const TARGET_THEATER_ID = "25";
 const TARGET_THEATER_KEY = "uci-new-york-city-center";
 
-const DATES = ["2026-10-20", "2026-12-19"];
+const DATES = ["2026-12-18", "2026-12-19"];
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -85,15 +85,13 @@ async function checkDate(date) {
 async function run() {
     console.log(`[${new Date().toLocaleString("pt-BR")}] Checando ingressos...`);
 
-    await sendTelegramAlert("🧪 Teste de envio: O bot do Telegram está funcionando perfeitamente!");
-
     for (const date of DATES) {
         const result = await checkDate(date);
         if (result && result.available) {
             const msg = `🚨 INGRESSOS LIBERADOS!\n\nFilme ID: ${EVENT_ID}\nCinema: ${result.theaterName}\nData: ${result.date}\nSessões disponíveis: ${result.roomsCount}`;
             await sendTelegramAlert(msg);
         } else {
-            console.log(`[${date}] Ingressos ainda não disponíveis no UCI New York City Center.`);
+            await sendTelegramAlert("Ainda sem ingresso </3");
         }
     }
 }
