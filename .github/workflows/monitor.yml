@@ -20,6 +20,6 @@ jobs:
 
       - name: Executar Script de Checagem
         env:
-          WPP_PHONE: ${{ secrets.WPP_PHONE }}
-          WPP_API_KEY: ${{ secrets.WPP_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: node monitor.js

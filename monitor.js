@@ -6,8 +6,8 @@ const TARGET_THEATER_KEY = "uci-new-york-city-center";
 
 const DATES = ["2026-12-18", "2026-12-19"];
 
-const PHONE_NUMBER = process.env.WPP_PHONE;
-const API_KEY = process.env.WPP_API_KEY;
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 const HEADERS = {
     "User-Agent":
@@ -15,25 +15,32 @@ const HEADERS = {
     Accept: "application/json",
 };
 
-async function sendWhatsAppAlert(message) {
-    if (!PHONE_NUMBER || !API_KEY) {
-        console.log("⚠️ Credenciais do WhatsApp não encontradas. Print da mensagem:");
+async function sendTelegramAlert(message) {
+    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+        console.log("⚠️ Credenciais do Telegram não encontradas. Mensagem no console:");
         console.log(message);
         return;
     }
 
-    const encodedText = encodeURIComponent(message);
-    const url = `https://api.callmebot.com/whatsapp.php?phone=${PHONE_NUMBER}&text=${encodedText}&apikey=${API_KEY}`;
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
     try {
-        const res = await fetch(url);
+        const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+            }),
+        });
+
         if (res.ok) {
-            console.log("✅ Alerta enviado para o WhatsApp com sucesso!");
+            console.log("✅ Alerta enviado para o Telegram com sucesso!");
         } else {
-            console.error("❌ Falha no envio do WhatsApp. Status:", res.status);
+            console.error("❌ Falha no envio do Telegram. Status:", res.status);
         }
     } catch (err) {
-        console.error("❌ Erro ao chamar API do WhatsApp:", err.message);
+        console.error("❌ Erro ao chamar API do Telegram:", err.message);
     }
 }
 
@@ -82,7 +89,7 @@ async function run() {
         const result = await checkDate(date);
         if (result && result.available) {
             const msg = `🚨 INGRESSOS LIBERADOS!\n\nFilme ID: ${EVENT_ID}\nCinema: ${result.theaterName}\nData: ${result.date}\nSessões disponíveis: ${result.roomsCount}`;
-            await sendWhatsAppAlert(msg);
+            await sendTelegramAlert(msg);
         } else {
             console.log(`[${date}] Ingressos ainda não disponíveis no UCI New York City Center.`);
         }
